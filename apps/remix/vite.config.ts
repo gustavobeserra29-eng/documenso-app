@@ -104,6 +104,8 @@ export default defineConfig({
       '.prisma/client/default': path.resolve(__dirname, '../../node_modules/.prisma/client/default.js'),
       '.prisma/client/index-browser': path.resolve(__dirname, '../../node_modules/.prisma/client/index-browser.js'),
       canvas: path.resolve(__dirname, './app/types/empty-module.ts'),
+      '@noble/ciphers/utils': '@noble/ciphers/utils.js',
+      '@noble/ciphers': '@noble/ciphers/index.js',
     },
   },
   /**
