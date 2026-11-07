@@ -152,6 +152,7 @@
     "zod": "^3.25.76"
   },
   "overrides": {
+    "@noble/ciphers": "^1.1.0",
     "lodash": "4.18.1",
     "brace-expansion@1": "^1.1.18",
     "pdfjs-dist": "5.4.296",
