@@ -41,10 +41,9 @@
     "translate:extract": "lingui extract --clean",
     "translate:compile": "lingui compile"
   },
-  "packageManager": "npm@11.19.1",
   "engines": {
-    "npm": ">=11.17.0",
-    "node": ">=22.0.0"
+  "npm": ">=11.17.0",
+  "node": "22.x"
   },
   "allowScripts": {
     "@documenso/skia-canvas": true,
