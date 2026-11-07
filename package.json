@@ -42,9 +42,9 @@
     "translate:compile": "lingui compile"
   },
   "engines": {
-  "npm": ">=11.17.0",
+  "npm": ">=10.9.0",
   "node": "22.x"
-  },
+},
   "allowScripts": {
     "@documenso/skia-canvas": true,
     "@playwright/browser-chromium": true,
