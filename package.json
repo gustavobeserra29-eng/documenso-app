@@ -41,10 +41,10 @@
     "translate:extract": "lingui extract --clean",
     "translate:compile": "lingui compile"
   },
+  "packageManager": "npm@10.9.9",
   "engines": {
-  "npm": ">=10.9.0",
-  "node": "22.x"
-},
+    "node": "22.x"
+  },
   "allowScripts": {
     "@documenso/skia-canvas": true,
     "@playwright/browser-chromium": true,
