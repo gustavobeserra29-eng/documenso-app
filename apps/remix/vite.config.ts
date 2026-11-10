@@ -61,7 +61,9 @@ export default defineConfig({
     noExternal: ['react-dropzone', 'plausible-tracker'],
     external: [
       '@noble/ciphers',
+      '@noble/ciphers/utils',
       '@noble/hashes',
+      '@noble/hashes/utils',
       '@scure/base',
       '@napi-rs/canvas',
       '@node-rs/bcrypt',
