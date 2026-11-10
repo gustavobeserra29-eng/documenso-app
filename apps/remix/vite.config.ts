@@ -102,6 +102,10 @@ export default defineConfig({
         replacement: path.resolve(__dirname, '../../node_modules/@noble/hashes/utils.js'),
       },
       {
+        find: '@noble/hashes/legacy',
+        replacement: path.resolve(__dirname, '../../node_modules/@noble/hashes/legacy.js'),
+      },
+      {
         find: '.prisma/client/default',
         replacement: path.resolve(__dirname, '../../node_modules/.prisma/client/default.js'),
       },
