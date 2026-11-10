@@ -36,7 +36,7 @@ import { DocumentSigningOrder, DocumentStatus, RecipientRole, SigningStatus } fr
 import { Clock8 } from 'lucide-react';
 import { Link, redirect } from 'react-router';
 import { match } from 'ts-pattern';
-
+import { getOptionalLoaderContext } from '~/.server/utils/get-loader-session';
 import { Header as AuthenticatedHeader } from '~/components/general/app-header';
 import { CscRecipientBlockedPage } from '~/components/general/document-signing/csc-recipient-blocked-page';
 import { CscRecipientSigningInProgressPage } from '~/components/general/document-signing/csc-recipient-signing-in-progress-page';
@@ -48,7 +48,6 @@ import { DocumentSigningProvider } from '~/components/general/document-signing/d
 import { DocumentSigningSenderDisabledPage } from '~/components/general/document-signing/document-signing-sender-disabled-page';
 import { EnvelopeSigningProvider } from '~/components/general/document-signing/envelope-signing-provider';
 import { RecipientBranding } from '~/components/general/recipient-branding';
-import { getOptionalLoaderContext } from '~/server/utils/get-loader-session';
 import { useCspNonce } from '~/utils/nonce';
 import { superLoaderJson, useSuperLoaderData } from '~/utils/super-json-loader';
 
