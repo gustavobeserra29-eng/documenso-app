@@ -17,16 +17,7 @@ const require = createRequire(import.meta.url);
 const pdfjsDistPath = path.dirname(require.resolve('pdfjs-dist/package.json'));
 const cMapsDir = normalizePath(path.join(pdfjsDistPath, 'cmaps'));
 
-/**
- * Note: We load the env variables externally so we can have runtime enviroment variables
- * for docker.
- *
- * Do not configure any envs here.
- */
 export default defineConfig({
-  // No trailing slash: the React Router dev server requires its `basename` to
-  // start with this raw value (see react-router.config.ts). Vite normalizes
-  // and joins asset URLs correctly either way.
   base: process.env.NEXT_PUBLIC_BASE_PATH ? process.env.NEXT_PUBLIC_BASE_PATH.replace(/\/$/, '') : '/',
   css: {
     postcss: {
@@ -57,8 +48,6 @@ export default defineConfig({
         return getLoadContext() as unknown as AppLoadContext;
       },
       exclude: [
-        // Spread the defaults but replace the /.css$/ rule so that Bull
-        // Board's static CSS at /api/jobs/board/static/** passes through to Hono.
         ...devServerDefaults.exclude.map((pattern) =>
           pattern instanceof RegExp && pattern.source === '.*\\.css$' ? /^(?!\/api\/jobs\/board\/).*\.css$/ : pattern,
         ),
@@ -99,18 +88,21 @@ export default defineConfig({
     ],
   },
   resolve: {
-    alias: {
-      https: 'node:https',
-      '.prisma/client/default': path.resolve(__dirname, '../../node_modules/.prisma/client/default.js'),
-      '.prisma/client/index-browser': path.resolve(__dirname, '../../node_modules/.prisma/client/index-browser.js'),
-      canvas: path.resolve(__dirname, './app/types/empty-module.ts'),
-    },
+    alias: [
+      { find: /^@noble\/ciphers\/(.*)$/, replacement: '@noble/ciphers/$1.js' },
+      { find: /^@noble\/hashes\/(.*)$/, replacement: '@noble/hashes/$1.js' },
+      { find: 'https', replacement: 'node:https' },
+      {
+        find: '.prisma/client/default',
+        replacement: path.resolve(__dirname, '../../node_modules/.prisma/client/default.js'),
+      },
+      {
+        find: '.prisma/client/index-browser',
+        replacement: path.resolve(__dirname, '../../node_modules/.prisma/client/index-browser.js'),
+      },
+      { find: 'canvas', replacement: path.resolve(__dirname, './app/types/empty-module.ts') },
+    ],
   },
-  /**
-   * Note: Re run rollup again to build the server afterwards.
-   *
-   * See rollup.config.mjs which is used for that.
-   */
   build: {
     commonjsOptions: {
       exclude: [/@noble\//, /@scure\//],
