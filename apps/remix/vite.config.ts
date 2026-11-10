@@ -69,7 +69,7 @@ export default defineConfig({
     }),
   ],
   ssr: {
-    noExternal: ['react-dropzone', 'plausible-tracker'],
+    noExternal: ['react-dropzone', 'plausible-tracker', '@noble/ciphers', '@noble/hashes', '@noble/curves'],
     external: [
       '@napi-rs/canvas',
       '@node-rs/bcrypt',
@@ -85,7 +85,7 @@ export default defineConfig({
   },
   optimizeDeps: {
     entries: ['./app/**/*', '../../packages/ui/**/*', '../../packages/lib/**/*'],
-    include: ['prop-types', 'file-selector', 'attr-accept'],
+    include: ['prop-types', 'file-selector', 'attr-accept', '@noble/ciphers', '@noble/hashes'],
     exclude: [
       'node_modules',
       '@napi-rs/canvas',
@@ -104,8 +104,10 @@ export default defineConfig({
       '.prisma/client/default': path.resolve(__dirname, '../../node_modules/.prisma/client/default.js'),
       '.prisma/client/index-browser': path.resolve(__dirname, '../../node_modules/.prisma/client/index-browser.js'),
       canvas: path.resolve(__dirname, './app/types/empty-module.ts'),
+      // Fix para resolução do @noble/ciphers no Vite/Vercel:
       '@noble/ciphers/utils': '@noble/ciphers/utils.js',
-      '@noble/ciphers': '@noble/ciphers/index.js',
+      '@noble/ciphers/aes': '@noble/ciphers/aes.js',
+      '@noble/ciphers$': '@noble/ciphers/index.js',
     },
   },
   /**
