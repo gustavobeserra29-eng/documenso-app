@@ -35,7 +35,6 @@ import { Trans } from '@lingui/react/macro';
 import { DocumentSigningOrder, DocumentStatus, RecipientRole, SigningStatus } from '@prisma/client';
 import { Clock8 } from 'lucide-react';
 import { Link, redirect } from 'react-router';
-import { getOptionalLoaderContext } from 'server/utils/get-loader-session';
 import { match } from 'ts-pattern';
 
 import { Header as AuthenticatedHeader } from '~/components/general/app-header';
@@ -49,6 +48,7 @@ import { DocumentSigningProvider } from '~/components/general/document-signing/d
 import { DocumentSigningSenderDisabledPage } from '~/components/general/document-signing/document-signing-sender-disabled-page';
 import { EnvelopeSigningProvider } from '~/components/general/document-signing/envelope-signing-provider';
 import { RecipientBranding } from '~/components/general/recipient-branding';
+import { getOptionalLoaderContext } from '~/server/utils/get-loader-session';
 import { useCspNonce } from '~/utils/nonce';
 import { superLoaderJson, useSuperLoaderData } from '~/utils/super-json-loader';
 
@@ -95,11 +95,6 @@ const handleV1Loader = async ({ params, request }: Route.LoaderArgs) => {
         })
       : [recipient];
 
-  // Dictation eligibility must be decided here, over the FULL recipient list
-  // — the same computation the completion route enforces. `allRecipients` is
-  // role-scoped (assistants only see strictly later steps, not their own
-  // group peers), so deriving it client-side from that list would offer
-  // dictation the server then silently ignores.
   const nextPendingRecipient =
     document.documentMeta?.signingOrder === DocumentSigningOrder.SEQUENTIAL
       ? await getNextPendingRecipient({
@@ -108,7 +103,6 @@ const handleV1Loader = async ({ params, request }: Route.LoaderArgs) => {
         })
       : null;
 
-  // Only the identity is needed client-side (dictation flag + prefill).
   const nextRecipient = nextPendingRecipient
     ? { name: nextPendingRecipient.name, email: nextPendingRecipient.email }
     : null;
@@ -121,7 +115,7 @@ const handleV1Loader = async ({ params, request }: Route.LoaderArgs) => {
   const isAccessAuthValid = derivedRecipientAccessAuth.every((accesssAuth) =>
     match(accesssAuth)
       .with(DocumentAccessAuth.ACCOUNT, () => user && user.email === recipient.email)
-      .with(DocumentAccessAuth.TWO_FACTOR_AUTH, () => true) // Allow without account requirement
+      .with(DocumentAccessAuth.TWO_FACTOR_AUTH, () => true)
       .exhaustive(),
   );
 
@@ -235,7 +229,7 @@ const handleV2Loader = async ({ params, request }: Route.LoaderArgs) => {
   const isAccessAuthValid = derivedRecipientAccessAuth.every((accesssAuth) =>
     match(accesssAuth)
       .with(DocumentAccessAuth.ACCOUNT, () => user && user.email === recipient.email)
-      .with(DocumentAccessAuth.TWO_FACTOR_AUTH, () => true) // Allow without account requirement
+      .with(DocumentAccessAuth.TWO_FACTOR_AUTH, () => true)
       .exhaustive(),
   );
 
@@ -271,16 +265,6 @@ const handleV2Loader = async ({ params, request }: Route.LoaderArgs) => {
     recipientAccessAuth: derivedRecipientAccessAuth,
   }).catch(() => null);
 
-  // CSC / TSP routing. TSP envelopes have three terminal recipient-page
-  // states beyond the normal signing UI:
-  //   1. `blocked` — service-scope OAuth returned a hard error (set by the
-  //      callback as a one-shot `csc_blocking_error` cookie).
-  //   2. `signing-in-progress` — credential-scope OAuth completed, SAD is
-  //      attached server-side, page auto-fires the sync sign mutation.
-  //   3. pre-auth — no service token yet, kick the recipient into
-  //      service-scope OAuth.
-  // The fourth state (service session valid, no SAD, no blocking error) falls
-  // through to the normal signing UI.
   if (IS_INSTANCE_CSC_MODE() && isTspEnvelope(envelope)) {
     const blockingError = await readCscBlockingErrorFromRequest(request);
 
@@ -336,7 +320,6 @@ export async function loader(loaderArgs: Route.LoaderArgs) {
     throw new Response('Not Found', { status: 404 });
   }
 
-  // Not efficient but works for now until we remove v1.
   const foundRecipient = await prisma.recipient.findFirst({
     where: {
       token,
@@ -356,7 +339,6 @@ export async function loader(loaderArgs: Route.LoaderArgs) {
     throw new Response('Not Found', { status: 404 });
   }
 
-  // Resolved here rather than via the token fetchers so branding is never loaded for a disabled sender.
   try {
     await assertSenderNotDisabled({ userId: foundRecipient.envelope.userId });
   } catch (e) {
@@ -376,11 +358,6 @@ export async function loader(loaderArgs: Route.LoaderArgs) {
   if (foundRecipient.envelope.internalVersion === 2) {
     const payloadV2 = await handleV2Loader(loaderArgs);
 
-    // V2 payload may carry a one-shot `Set-Cookie` header (used to clear the
-    // CSC blocking-error cookie after the loader reads it). Forward it via
-    // the `superLoaderJson` response init so the browser actually applies the
-    // header. The field stays on the payload — it's just a `Max-Age=0` clear
-    // directive, not sensitive — and isn't read by any consumer.
     const responseHeaders =
       'responseHeaders' in payloadV2 && payloadV2.responseHeaders ? payloadV2.responseHeaders : undefined;
 
