@@ -58,7 +58,7 @@ export default defineConfig({
     }),
   ],
   ssr: {
-    noExternal: ['react-dropzone', 'plausible-tracker', /@noble\//, /@scure\//],
+    noExternal: ['react-dropzone', 'plausible-tracker', '@noble/ciphers', '@noble/hashes', /@noble\//, /@scure\//],
     external: [
       '@napi-rs/canvas',
       '@node-rs/bcrypt',
@@ -89,8 +89,6 @@ export default defineConfig({
   },
   resolve: {
     alias: [
-      { find: '@noble/ciphers/utils', replacement: require.resolve('@noble/ciphers/utils') },
-      { find: '@noble/hashes/utils', replacement: require.resolve('@noble/hashes/utils') },
       { find: 'https', replacement: 'node:https' },
       {
         find: '.prisma/client/default',
