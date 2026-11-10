@@ -89,8 +89,8 @@ export default defineConfig({
   },
   resolve: {
     alias: [
-      { find: '@noble/ciphers/utils', replacement: '@noble/ciphers/utils.js' },
-      { find: '@noble/hashes/utils', replacement: '@noble/hashes/utils.js' },
+      { find: '@noble/ciphers/utils', replacement: require.resolve('@noble/ciphers/utils') },
+      { find: '@noble/hashes/utils', replacement: require.resolve('@noble/hashes/utils') },
       { find: 'https', replacement: 'node:https' },
       {
         find: '.prisma/client/default',
